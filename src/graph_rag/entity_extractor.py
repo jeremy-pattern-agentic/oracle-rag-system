@@ -31,12 +31,13 @@ class EntityExtractor:
         logger.info(f"Loading NER model: {model_name}")
         # Auto-detect GPU (device=0) or fallback to CPU (device=-1)
         import torch
+
         device = 0 if torch.cuda.is_available() else -1
         self.ner_pipeline = pipeline(
             "ner",
             model=model_name,
             aggregation_strategy="simple",  # Aggregates subword tokens
-            device=device
+            device=device,
         )
         logger.info(f"NER model loaded successfully (threshold={confidence_threshold})")
 
@@ -67,20 +68,28 @@ class EntityExtractor:
             # Filter by confidence and clean entity names
             entities = []
             for ent in raw_entities:
-                if ent['score'] >= self.confidence_threshold:
+                if ent["score"] >= self.confidence_threshold:
                     # Clean entity name: strip '##' from BERT subword tokens
-                    name = ent['word'].strip().replace('##', '')
+                    name = ent["word"].strip().replace("##", "")
 
                     # Extract entity type: e.g., B-PER -> PER, I-ORG -> ORG
-                    entity_type = ent['entity_group'] if 'entity_group' in ent else ent['entity'].split('-')[-1]
+                    entity_type = (
+                        ent["entity_group"]
+                        if "entity_group" in ent
+                        else ent["entity"].split("-")[-1]
+                    )
 
-                    entities.append({
-                        "name": name,
-                        "type": entity_type,
-                        "confidence": float(ent['score'])
-                    })
+                    entities.append(
+                        {
+                            "name": name,
+                            "type": entity_type,
+                            "confidence": float(ent["score"]),
+                        }
+                    )
 
-            logger.info(f"Extracted {len(entities)} entities from text (threshold={self.confidence_threshold})")
+            logger.info(
+                f"Extracted {len(entities)} entities from text (threshold={self.confidence_threshold})"
+            )
             return entities
 
         except Exception as e:

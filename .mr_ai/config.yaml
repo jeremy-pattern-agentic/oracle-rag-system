@@ -1,0 +1,63 @@
+# Mr. AI Framework Configuration
+framework:
+  version: 2.0.0
+  initialized: 2025-11-21T20:20:14Z
+  project_type: python
+
+platform:
+  ai_assistant: generic  # claude-code, cursor, windsurf, github-copilot, generic
+  server_ip: [0;36m[INFO][0m Detected server IP: 10.1.10.161
+10.1.10.161
+  python_interpreter: ./.venv/bin/python
+
+orchestrator:
+  max_context_lines: 1000
+  max_code_lines: 10
+  evidence_required: true
+  validation_type: external
+
+agents:
+  max_task_duration: 30  # minutes
+  max_retry_attempts: 3
+  max_code_per_task: 100  # lines
+  evidence_format: structured
+  require_work_orders: true
+
+environment:
+  use_service_manager: true
+  external_validation: mandatory
+  auto_detect_platform: true
+
+quality_gates:
+  - functional: "Does it actually work?"
+  - integrated: "Does it work with other components?"
+  - performant: "Does it meet performance requirements?"
+  - stable: "Does it work consistently (3+ times)?"
+
+validation:
+  require_external_test: true
+  require_evidence_blocks: true
+  require_raw_output: true
+  forbid_success_theater: true
+
+  # Platform-specific validation adjustments
+  external_ip_required: true  # Can be disabled for localhost-only dev
+  allow_localhost_only: false  # Set true for local development mode
+
+persistence:
+  update_wisdom: mandatory
+  log_all_failures: true
+  share_patterns: true
+  maintain_experience: true
+
+enforcement:
+  reject_without_evidence: true
+  reject_vague_claims: true
+  reject_localhost_only: true
+  require_service_manager: true  # Can be made pluggable
+
+# Service management backend options (future: pluggable)
+service_backend:
+  type: service_manager  # Options: service_manager, systemd, docker-compose, kubernetes, pm2
+  enforce: true
+  config_path: ./service_manager.sh

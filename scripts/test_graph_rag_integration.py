@@ -13,12 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 sys.path.insert(0, str(Path(__file__).parent.parent / "config"))
 
 from graph_rag.pipeline import GraphRAGPipeline
-from config import (
-    NEO4J_CONFIG,
-    MILVUS_CONFIG,
-    MILVUS_COLLECTIONS,
-    GRAPH_RAG_CONFIG
-)
+from config import NEO4J_CONFIG, MILVUS_CONFIG, MILVUS_COLLECTIONS, GRAPH_RAG_CONFIG
 
 
 def print_header(title):
@@ -71,8 +66,8 @@ def main():
     pipeline = GraphRAGPipeline(
         neo4j_config=NEO4J_CONFIG,
         milvus_config=MILVUS_CONFIG,
-        collection_config=MILVUS_COLLECTIONS['graph_entities'],
-        graph_rag_config=GRAPH_RAG_CONFIG
+        collection_config=MILVUS_COLLECTIONS["graph_entities"],
+        graph_rag_config=GRAPH_RAG_CONFIG,
     )
     print("✓ Pipeline initialized")
 
@@ -91,7 +86,9 @@ def main():
     print(f"Relations found:            {stats['relations_found']}")
     print(f"Relations stored in Neo4j:  {stats['relations_stored']}")
     print(f"Processing time:            {stats['processing_time_seconds']:.2f} seconds")
-    print(f"Avg time per chunk:         {stats['processing_time_seconds'] / max(stats['chunks_created'], 1):.2f} seconds")
+    print(
+        f"Avg time per chunk:         {stats['processing_time_seconds'] / max(stats['chunks_created'], 1):.2f} seconds"
+    )
 
     # Get current database statistics
     print_section("Querying Storage Backends")
@@ -103,10 +100,12 @@ def main():
     # Query Neo4j for sample entities
     print_header("NEO4J VERIFICATION - SAMPLE ENTITIES")
     try:
-        with pipeline.graph_storage.driver.session(database=NEO4J_CONFIG['database']) as session:
+        with pipeline.graph_storage.driver.session(
+            database=NEO4J_CONFIG["database"]
+        ) as session:
             # Get sample RagEntity nodes
             result = session.run(f"""
-                MATCH (e:{GRAPH_RAG_CONFIG['entity_label']})
+                MATCH (e:{GRAPH_RAG_CONFIG["entity_label"]})
                 RETURN e.name as name, e.type as type
                 ORDER BY e.updated_at DESC
                 LIMIT 10
@@ -123,10 +122,12 @@ def main():
     # Query Neo4j for sample relationships
     print_header("NEO4J VERIFICATION - SAMPLE RELATIONSHIPS")
     try:
-        with pipeline.graph_storage.driver.session(database=NEO4J_CONFIG['database']) as session:
+        with pipeline.graph_storage.driver.session(
+            database=NEO4J_CONFIG["database"]
+        ) as session:
             # Get sample relationships
             result = session.run(f"""
-                MATCH (a:{GRAPH_RAG_CONFIG['entity_label']})-[r:{GRAPH_RAG_CONFIG['relationship_type']}]->(b:{GRAPH_RAG_CONFIG['entity_label']})
+                MATCH (a:{GRAPH_RAG_CONFIG["entity_label"]})-[r:{GRAPH_RAG_CONFIG["relationship_type"]}]->(b:{GRAPH_RAG_CONFIG["entity_label"]})
                 RETURN a.name as source, r.type as relation, b.name as target
                 ORDER BY r.updated_at DESC
                 LIMIT 10
@@ -135,7 +136,9 @@ def main():
             relationships = list(result)
             print(f"Sample relationships in Neo4j ({len(relationships)} shown):")
             for i, record in enumerate(relationships, 1):
-                print(f"  {i}. {record['source']} -{record['relation']}-> {record['target']}")
+                print(
+                    f"  {i}. {record['source']} -{record['relation']}-> {record['target']}"
+                )
 
     except Exception as e:
         print(f"Error querying Neo4j relationships: {e}")
@@ -144,37 +147,42 @@ def main():
     print_header("MILVUS VERIFICATION - VECTOR SEARCH")
     try:
         # Create a query for "IBM" concept
-        query_embedding = pipeline.embedder.encode("IBM Research artificial intelligence")
+        query_embedding = pipeline.embedder.encode(
+            "IBM Research artificial intelligence"
+        )
         results = pipeline.vector_storage.search_similar_entities(
-            query_vector=query_embedding.tolist(),
-            top_k=5
+            query_vector=query_embedding.tolist(), top_k=5
         )
 
-        print(f"Top 5 similar entities to 'IBM Research artificial intelligence':")
+        print("Top 5 similar entities to 'IBM Research artificial intelligence':")
         for i, result in enumerate(results, 1):
-            print(f"  {i}. {result['name']} (type={result['type']}, distance={result['distance']:.4f})")
+            print(
+                f"  {i}. {result['name']} (type={result['type']}, distance={result['distance']:.4f})"
+            )
 
     except Exception as e:
         print(f"Error performing vector search: {e}")
 
     # Performance validation
     print_header("PERFORMANCE VALIDATION")
-    avg_chunk_time = stats['processing_time_seconds'] / max(stats['chunks_created'], 1)
+    avg_chunk_time = stats["processing_time_seconds"] / max(stats["chunks_created"], 1)
     max_chunk_time = 5.0  # From work order
 
     print(f"Average time per chunk: {avg_chunk_time:.2f}s")
     print(f"Maximum allowed:        {max_chunk_time}s")
-    print(f"Status:                 {'✓ PASS' if avg_chunk_time < max_chunk_time else '✗ FAIL'}")
+    print(
+        f"Status:                 {'✓ PASS' if avg_chunk_time < max_chunk_time else '✗ FAIL'}"
+    )
 
     # Validation summary
     print_header("VALIDATION SUMMARY")
     validations = {
-        "Entities extracted": stats['entities_extracted'] > 0,
-        "Entities in Neo4j": db_stats['neo4j_entities'] > 0,
-        "Entities in Milvus": db_stats['milvus_entities'] > 0,
-        "Relationships found": stats['relations_found'] >= 0,
-        "Vector search works": len(results) > 0 if 'results' in locals() else False,
-        "Performance acceptable": avg_chunk_time < max_chunk_time
+        "Entities extracted": stats["entities_extracted"] > 0,
+        "Entities in Neo4j": db_stats["neo4j_entities"] > 0,
+        "Entities in Milvus": db_stats["milvus_entities"] > 0,
+        "Relationships found": stats["relations_found"] >= 0,
+        "Vector search works": len(results) > 0 if "results" in locals() else False,
+        "Performance acceptable": avg_chunk_time < max_chunk_time,
     }
 
     for check, passed in validations.items():
@@ -183,7 +191,9 @@ def main():
 
     all_passed = all(validations.values())
     print("\n" + "=" * 70)
-    print(f"Overall Status: {'✓ ALL TESTS PASSED' if all_passed else '✗ SOME TESTS FAILED'}")
+    print(
+        f"Overall Status: {'✓ ALL TESTS PASSED' if all_passed else '✗ SOME TESTS FAILED'}"
+    )
     print("=" * 70)
 
     # Cleanup

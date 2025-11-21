@@ -30,7 +30,7 @@ class GraphRAGPipeline:
         neo4j_config: Dict[str, any],
         milvus_config: Dict[str, any],
         collection_config: Dict[str, any],
-        graph_rag_config: Dict[str, any]
+        graph_rag_config: Dict[str, any],
     ):
         """
         Initialize Graph RAG pipeline with all components.
@@ -47,19 +47,19 @@ class GraphRAGPipeline:
 
         # Initialize embedding model (auto-detect GPU if available)
         logger.info(f"Loading embedding model: {graph_rag_config['embedding_model']}")
-        self.embedder = SentenceTransformer(graph_rag_config['embedding_model'])
+        self.embedder = SentenceTransformer(graph_rag_config["embedding_model"])
 
         # Initialize entity extractor
         self.entity_extractor = EntityExtractor(
-            model_name=graph_rag_config['ner_model'],
-            confidence_threshold=graph_rag_config['ner_confidence_threshold']
+            model_name=graph_rag_config["ner_model"],
+            confidence_threshold=graph_rag_config["ner_confidence_threshold"],
         )
 
         # Initialize relation classifier
         self.relation_classifier = RelationClassifier(
-            model_name=graph_rag_config['relation_model'],
-            candidate_relations=graph_rag_config['candidate_relations'],
-            confidence_threshold=graph_rag_config['relation_confidence_threshold']
+            model_name=graph_rag_config["relation_model"],
+            candidate_relations=graph_rag_config["candidate_relations"],
+            confidence_threshold=graph_rag_config["relation_confidence_threshold"],
         )
 
         # Initialize storage backends
@@ -99,15 +99,15 @@ class GraphRAGPipeline:
             "entities_stored_milvus": 0,
             "relations_found": 0,
             "relations_stored": 0,
-            "processing_time_seconds": 0.0
+            "processing_time_seconds": 0.0,
         }
 
         logger.info("Starting Graph RAG text processing...")
 
         try:
             # Step 1: Chunk text
-            chunks = chunk_text(text, max_length=self.config['chunk_max_length'])
-            stats['chunks_created'] = len(chunks)
+            chunks = chunk_text(text, max_length=self.config["chunk_max_length"])
+            stats["chunks_created"] = len(chunks)
             logger.info(f"Created {len(chunks)} chunks")
 
             # Track all entities across chunks for relationship extraction
@@ -119,48 +119,48 @@ class GraphRAGPipeline:
 
                 # Extract entities
                 entities = self.entity_extractor.extract_entities(chunk)
-                stats['entities_extracted'] += len(entities)
-                logger.debug(f"Extracted {len(entities)} entities from chunk {chunk_idx + 1}")
+                stats["entities_extracted"] += len(entities)
+                logger.debug(
+                    f"Extracted {len(entities)} entities from chunk {chunk_idx + 1}"
+                )
 
                 # Process each entity
                 for entity in entities:
                     # Generate embedding
-                    embedding = self.embedder.encode(entity['name'])
+                    embedding = self.embedder.encode(entity["name"])
 
                     # Store in Neo4j
                     success_neo4j = self.graph_storage.add_entity(
-                        name=entity['name'],
-                        entity_type=entity['type'],
+                        name=entity["name"],
+                        entity_type=entity["type"],
                         embedding=embedding.tolist(),
-                        label=self.config['entity_label']
+                        label=self.config["entity_label"],
                     )
                     if success_neo4j:
-                        stats['entities_stored_neo4j'] += 1
+                        stats["entities_stored_neo4j"] += 1
 
                     # Store in Milvus
                     success_milvus = self.vector_storage.add_entity_vector(
-                        name=entity['name'],
+                        name=entity["name"],
                         embedding=embedding.tolist(),
-                        entity_type=entity['type']
+                        entity_type=entity["type"],
                     )
                     if success_milvus:
-                        stats['entities_stored_milvus'] += 1
+                        stats["entities_stored_milvus"] += 1
 
                     # Add entity with chunk context for relationship extraction
-                    all_entities.append({
-                        **entity,
-                        'chunk': chunk,
-                        'chunk_idx': chunk_idx
-                    })
+                    all_entities.append(
+                        {**entity, "chunk": chunk, "chunk_idx": chunk_idx}
+                    )
 
             # Step 5-6: Extract relationships (pairwise entity classification)
             logger.info("Extracting relationships between entities...")
             for i, ent1_data in enumerate(all_entities):
-                for j, ent2_data in enumerate(all_entities[i+1:], i+1):
-                    ent1 = ent1_data['name']
-                    ent2 = ent2_data['name']
-                    type1 = ent1_data['type']
-                    type2 = ent2_data['type']
+                for j, ent2_data in enumerate(all_entities[i + 1 :], i + 1):
+                    ent1 = ent1_data["name"]
+                    ent2 = ent2_data["name"]
+                    type1 = ent1_data["type"]
+                    type2 = ent2_data["type"]
 
                     # Skip same-type entities (pattern from graph_rag.py line 79)
                     if type1 == type2:
@@ -168,35 +168,33 @@ class GraphRAGPipeline:
 
                     # Use chunk context where both entities appear
                     # Prefer same chunk, otherwise use first entity's chunk
-                    if ent1_data['chunk_idx'] == ent2_data['chunk_idx']:
-                        context = ent1_data['chunk']
+                    if ent1_data["chunk_idx"] == ent2_data["chunk_idx"]:
+                        context = ent1_data["chunk"]
                     else:
-                        context = ent1_data['chunk']
+                        context = ent1_data["chunk"]
 
                     # Classify relationship
                     result = self.relation_classifier.classify_relation(
-                        ent1=ent1,
-                        ent2=ent2,
-                        context=context
+                        ent1=ent1, ent2=ent2, context=context
                     )
 
                     if result:
-                        stats['relations_found'] += 1
+                        stats["relations_found"] += 1
 
                         # Store relationship in Neo4j
                         success = self.graph_storage.add_relationship(
                             ent1=ent1,
-                            relation=result['relation'],
+                            relation=result["relation"],
                             ent2=ent2,
-                            entity_label=self.config['entity_label'],
-                            rel_type=self.config['relationship_type']
+                            entity_label=self.config["entity_label"],
+                            rel_type=self.config["relationship_type"],
                         )
 
                         if success:
-                            stats['relations_stored'] += 1
+                            stats["relations_stored"] += 1
 
             # Calculate processing time
-            stats['processing_time_seconds'] = round(time.time() - start_time, 2)
+            stats["processing_time_seconds"] = round(time.time() - start_time, 2)
 
             logger.info(
                 f"Graph RAG processing complete: "
@@ -230,7 +228,7 @@ class GraphRAGPipeline:
 
         # Read text from file
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 text = f.read()
 
             # Process text
@@ -249,12 +247,12 @@ class GraphRAGPipeline:
         """
         return {
             "neo4j_entities": self.graph_storage.get_entity_count(
-                label=self.config['entity_label']
+                label=self.config["entity_label"]
             ),
             "neo4j_relationships": self.graph_storage.get_relationship_count(
-                rel_type=self.config['relationship_type']
+                rel_type=self.config["relationship_type"]
             ),
-            "milvus_entities": self.vector_storage.get_entity_count()
+            "milvus_entities": self.vector_storage.get_entity_count(),
         }
 
     def close(self):

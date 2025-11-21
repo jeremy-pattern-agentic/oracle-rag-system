@@ -16,7 +16,7 @@ __all__ = [
     "RelationClassifier",
     "GraphStorage",
     "VectorStorage",
-    "GraphRAGPipeline"
+    "GraphRAGPipeline",
 ]
 
 __version__ = "1.0.0"

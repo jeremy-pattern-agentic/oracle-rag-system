@@ -14,14 +14,14 @@ import numpy as np
 
 # Setup logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
 
 class NumpyEncoder(json.JSONEncoder):
     """Custom JSON encoder to handle numpy arrays and types."""
+
     def default(self, obj):
         if isinstance(obj, np.ndarray):
             return obj.tolist()
@@ -67,18 +67,24 @@ def read_chromadb_sqlite(chroma_path: Path) -> Dict[str, Any]:
             coll = client.get_collection(coll_name)
 
             # Get all documents with metadata and embeddings
-            results = coll.get(
-                include=['documents', 'embeddings', 'metadatas']
-            )
+            results = coll.get(include=["documents", "embeddings", "metadatas"])
 
-            doc_count = len(results['documents']) if results['documents'] is not None else 0
+            doc_count = (
+                len(results["documents"]) if results["documents"] is not None else 0
+            )
             total_docs += doc_count
 
             data[coll_name] = {
-                'documents': results['documents'] if results['documents'] is not None else [],
-                'embeddings': results['embeddings'] if results['embeddings'] is not None else [],
-                'metadatas': results['metadatas'] if results['metadatas'] is not None else [],
-                'count': doc_count
+                "documents": results["documents"]
+                if results["documents"] is not None
+                else [],
+                "embeddings": results["embeddings"]
+                if results["embeddings"] is not None
+                else [],
+                "metadatas": results["metadatas"]
+                if results["metadatas"] is not None
+                else [],
+                "count": doc_count,
             }
 
             logger.info(f"  Loaded {doc_count} documents from {coll_name}")
@@ -87,7 +93,9 @@ def read_chromadb_sqlite(chroma_path: Path) -> Dict[str, Any]:
         return data
 
     except ImportError:
-        logger.error("chromadb package not installed. Install with: pip install chromadb")
+        logger.error(
+            "chromadb package not installed. Install with: pip install chromadb"
+        )
         sys.exit(1)
     except Exception as e:
         logger.error(f"Error reading ChromaDB: {e}")
@@ -108,20 +116,24 @@ def export_to_json(chromadb_data: Dict[str, Any], output_path: Path):
     export_data = {}
     for coll_name, coll_data in chromadb_data.items():
         export_data[coll_name] = {
-            'count': coll_data['count'],
-            'documents': coll_data['documents'],
-            'metadatas': coll_data['metadatas'],
+            "count": coll_data["count"],
+            "documents": coll_data["documents"],
+            "metadatas": coll_data["metadatas"],
             # Embeddings are large - skip in JSON export
-            'embeddings_shape': [
-                len(coll_data['embeddings']),
-                len(coll_data['embeddings'][0]) if len(coll_data['embeddings']) > 0 else 0
-            ]
+            "embeddings_shape": [
+                len(coll_data["embeddings"]),
+                len(coll_data["embeddings"][0])
+                if len(coll_data["embeddings"]) > 0
+                else 0,
+            ],
         }
 
-    with open(output_path, 'w') as f:
+    with open(output_path, "w") as f:
         json.dump(export_data, f, indent=2, cls=NumpyEncoder)
 
-    logger.info(f"JSON export complete: {output_path.stat().st_size / 1024 / 1024:.2f} MB")
+    logger.info(
+        f"JSON export complete: {output_path.stat().st_size / 1024 / 1024:.2f} MB"
+    )
 
 
 def prepare_for_graph_rag(chromadb_data: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -139,17 +151,19 @@ def prepare_for_graph_rag(chromadb_data: Dict[str, Any]) -> List[Dict[str, Any]]
     prepared_docs = []
 
     for coll_name, coll_data in chromadb_data.items():
-        for idx in range(coll_data['count']):
+        for idx in range(coll_data["count"]):
             doc = {
-                'text': coll_data['documents'][idx],
-                'metadata': {
-                    'source_collection': coll_name,
-                    'source_index': idx,
-                    'import_source': 'chromadb_h200_openwebui',
-                    **coll_data['metadatas'][idx]  # Preserve original metadata
+                "text": coll_data["documents"][idx],
+                "metadata": {
+                    "source_collection": coll_name,
+                    "source_index": idx,
+                    "import_source": "chromadb_h200_openwebui",
+                    **coll_data["metadatas"][idx],  # Preserve original metadata
                 },
                 # Original embedding (will be replaced by Graph RAG's embedding model)
-                'original_embedding': coll_data['embeddings'][idx] if len(coll_data['embeddings']) > 0 else None
+                "original_embedding": coll_data["embeddings"][idx]
+                if len(coll_data["embeddings"]) > 0
+                else None,
             }
             prepared_docs.append(doc)
 
@@ -164,25 +178,25 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(
-        description='Import ChromaDB collections into PAOAS'
+        description="Import ChromaDB collections into PAOAS"
     )
     parser.add_argument(
-        '--chromadb-path',
+        "--chromadb-path",
         type=Path,
         required=True,
-        help='Path to ChromaDB directory or sqlite file'
+        help="Path to ChromaDB directory or sqlite file",
     )
     parser.add_argument(
-        '--output-json',
+        "--output-json",
         type=Path,
         default=None,
-        help='Optional: Export to JSON for inspection'
+        help="Optional: Export to JSON for inspection",
     )
     parser.add_argument(
-        '--output-prepared',
+        "--output-prepared",
         type=Path,
-        default=Path('data/chromadb_prepared.json'),
-        help='Output path for prepared documents'
+        default=Path("data/chromadb_prepared.json"),
+        help="Output path for prepared documents",
     )
 
     args = parser.parse_args()
@@ -213,7 +227,7 @@ def main():
 
     # Save prepared documents
     args.output_prepared.parent.mkdir(parents=True, exist_ok=True)
-    with open(args.output_prepared, 'w') as f:
+    with open(args.output_prepared, "w") as f:
         json.dump(prepared_docs, f, indent=2, cls=NumpyEncoder)
 
     logger.info(f"Prepared documents saved to: {args.output_prepared}")
@@ -231,5 +245,5 @@ def main():
     logger.info("   Next: Run scripts/ingest_chromadb_to_paoas.py")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

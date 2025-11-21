@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Quick GPU stress test - load models and process a few docs"""
+
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 import json
@@ -24,8 +26,8 @@ print("\nInitializing Graph RAG pipeline...")
 pipeline = GraphRAGPipeline(
     neo4j_config=config.NEO4J_CONFIG,
     milvus_config=config.MILVUS_CONFIG,
-    collection_config=config.MILVUS_COLLECTIONS['graph_entities'],
-    graph_rag_config=config.GRAPH_RAG_CONFIG
+    collection_config=config.MILVUS_COLLECTIONS["graph_entities"],
+    graph_rag_config=config.GRAPH_RAG_CONFIG,
 )
 print("✅ Pipeline initialized")
 
@@ -39,9 +41,11 @@ print(f"Total docs available: {len(docs):,}")
 # Process first 20 docs
 print("\nProcessing first 20 documents with GPU...")
 for i, doc in enumerate(docs[:20], 1):
-    result = pipeline.process_text(doc['text'], doc['metadata'])
-    print(f"  Doc {i}/20: {result.get('entities_count', 0)} entities, "
-          f"{result.get('relations_count', 0)} relations")
+    result = pipeline.process_text(doc["text"], doc["metadata"])
+    print(
+        f"  Doc {i}/20: {result.get('entities_count', 0)} entities, "
+        f"{result.get('relations_count', 0)} relations"
+    )
 
 print("\n✅ GPU stress test complete!")
 print("Check nvtop/nvidia-smi for GPU utilization")

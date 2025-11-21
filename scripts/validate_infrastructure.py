@@ -5,6 +5,7 @@ Tests Neo4j and Milvus Lite connectivity
 
 Evidence-based validation per Mr.AI Framework Gate 1
 """
+
 import sys
 from pathlib import Path
 
@@ -12,15 +13,15 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from neo4j import GraphDatabase
-from pymilvus import MilvusClient, connections
+from pymilvus import MilvusClient
 import logging
 
 # Setup logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s'
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
 )
 logger = logging.getLogger(__name__)
+
 
 def validate_neo4j():
     """Test Neo4j connectivity"""
@@ -35,8 +36,7 @@ def validate_neo4j():
 
         # Connect to Neo4j
         driver = GraphDatabase.driver(
-            NEO4J_CONFIG["uri"],
-            auth=(NEO4J_CONFIG["user"], NEO4J_CONFIG["password"])
+            NEO4J_CONFIG["uri"], auth=(NEO4J_CONFIG["user"], NEO4J_CONFIG["password"])
         )
 
         # Test connection with simple query
@@ -58,7 +58,9 @@ def validate_neo4j():
                 logger.info(f"   Edition: {db_info['edition']}")
 
                 # Count existing nodes
-                node_count = session.run("MATCH (n) RETURN count(n) AS count").single()["count"]
+                node_count = session.run("MATCH (n) RETURN count(n) AS count").single()[
+                    "count"
+                ]
                 logger.info(f"   Existing nodes: {node_count}")
 
                 driver.close()
@@ -72,6 +74,7 @@ def validate_neo4j():
         logger.error(f"❌ Neo4j connection failed: {e}")
         return False
 
+
 def validate_milvus_lite():
     """Test Milvus Lite connectivity"""
     logger.info("")
@@ -82,14 +85,14 @@ def validate_milvus_lite():
     try:
         # Import config
         sys.path.insert(0, str(Path(__file__).parent.parent / "config"))
-        from config import MILVUS_CONFIG, MILVUS_COLLECTIONS
+        from config import MILVUS_CONFIG
 
         # Connect to Milvus Lite (local file-based)
         client = MilvusClient(uri=MILVUS_CONFIG["uri"])
 
         logger.info("✅ Milvus Lite connection successful")
         logger.info(f"   Storage: {MILVUS_CONFIG['uri']}")
-        logger.info(f"   Mode: Milvus Lite (CPU-only, local file)")
+        logger.info("   Mode: Milvus Lite (CPU-only, local file)")
 
         # List existing collections
         collections = client.list_collections()
@@ -111,7 +114,7 @@ def validate_milvus_lite():
         client.create_collection(
             collection_name=test_collection,
             dimension=384,  # all-MiniLM-L6-v2 dimension
-            metric_type="COSINE"
+            metric_type="COSINE",
         )
 
         # Insert test data
@@ -129,15 +132,17 @@ def validate_milvus_lite():
             collection_name=test_collection,
             data=[[0.15] * 384],  # Query vector
             limit=2,
-            output_fields=["text"]
+            output_fields=["text"],
         )
 
         logger.info(f"   Query returned {len(results[0])} results")
         for i, hit in enumerate(results[0]):
-            logger.info(f"      {i+1}. ID={hit['id']}, Distance={hit['distance']:.4f}, Text={hit['entity']['text']}")
+            logger.info(
+                f"      {i + 1}. ID={hit['id']}, Distance={hit['distance']:.4f}, Text={hit['entity']['text']}"
+            )
 
         # Cleanup test collection
-        logger.info(f"   Cleaning up test collection...")
+        logger.info("   Cleaning up test collection...")
         client.drop_collection(test_collection)
 
         logger.info("✅ Milvus Lite validation complete")
@@ -146,8 +151,10 @@ def validate_milvus_lite():
     except Exception as e:
         logger.error(f"❌ Milvus Lite validation failed: {e}")
         import traceback
+
         logger.error(traceback.format_exc())
         return False
+
 
 def main():
     """Run all infrastructure validation tests"""
@@ -156,10 +163,7 @@ def main():
     logger.info("Mr.AI Framework Gate 1: Functional Validation")
     logger.info("=" * 60 + "\n")
 
-    results = {
-        "neo4j": validate_neo4j(),
-        "milvus_lite": validate_milvus_lite()
-    }
+    results = {"neo4j": validate_neo4j(), "milvus_lite": validate_milvus_lite()}
 
     logger.info("")
     logger.info("=" * 60)
@@ -181,6 +185,7 @@ def main():
         logger.error("❌ Gate 1 FAILED: Infrastructure issues detected")
         logger.error("   Resolve failures before proceeding")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

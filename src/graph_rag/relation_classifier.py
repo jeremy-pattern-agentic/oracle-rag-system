@@ -21,7 +21,7 @@ class RelationClassifier:
         self,
         model_name: str,
         candidate_relations: List[str],
-        confidence_threshold: float = 0.6
+        confidence_threshold: float = 0.6,
     ):
         """
         Initialize the relation classifier.
@@ -38,11 +38,10 @@ class RelationClassifier:
         logger.info(f"Loading relation classifier model: {model_name}")
         # Auto-detect GPU (device=0) or fallback to CPU (device=-1)
         import torch
+
         device = 0 if torch.cuda.is_available() else -1
         self.classifier = pipeline(
-            "zero-shot-classification",
-            model=model_name,
-            device=device
+            "zero-shot-classification", model=model_name, device=device
         )
         logger.info(
             f"Relation classifier loaded (threshold={confidence_threshold}, "
@@ -50,10 +49,7 @@ class RelationClassifier:
         )
 
     def classify_relation(
-        self,
-        ent1: str,
-        ent2: str,
-        context: str
+        self, ent1: str, ent2: str, context: str
     ) -> Optional[Dict[str, any]]:
         """
         Classify relationship between two entities using context.
@@ -90,14 +86,12 @@ class RelationClassifier:
 
             # Run zero-shot classification
             result = self.classifier(
-                hypothesis,
-                self.candidate_relations,
-                multi_label=False
+                hypothesis, self.candidate_relations, multi_label=False
             )
 
             # Get top prediction
-            top_label = result['labels'][0]
-            top_score = result['scores'][0]
+            top_label = result["labels"][0]
+            top_score = result["scores"][0]
 
             # Filter by confidence threshold and exclude "NONE" relations
             if top_score >= self.confidence_threshold and top_label != "NONE":
@@ -105,10 +99,7 @@ class RelationClassifier:
                     f"Classified relation: {ent1} -{top_label}-> {ent2} "
                     f"(confidence={top_score:.3f})"
                 )
-                return {
-                    "relation": top_label,
-                    "confidence": float(top_score)
-                }
+                return {"relation": top_label, "confidence": float(top_score)}
             else:
                 logger.debug(
                     f"No confident relation found between {ent1} and {ent2} "

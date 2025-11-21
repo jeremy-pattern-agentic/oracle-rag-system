@@ -11,7 +11,7 @@ from pymilvus import (
     CollectionSchema,
     FieldSchema,
     DataType,
-    utility
+    utility,
 )
 
 logger = logging.getLogger(__name__)
@@ -24,7 +24,9 @@ class VectorStorage:
     Pattern adapted from graph_rag.py line 74.
     """
 
-    def __init__(self, milvus_config: Dict[str, any], collection_config: Dict[str, any]):
+    def __init__(
+        self, milvus_config: Dict[str, any], collection_config: Dict[str, any]
+    ):
         """
         Initialize Milvus Lite connection and collection.
 
@@ -41,8 +43,8 @@ class VectorStorage:
         """
         self.milvus_config = milvus_config
         self.collection_config = collection_config
-        self.collection_name = collection_config['name']
-        self.dimension = collection_config['dimension']
+        self.collection_name = collection_config["name"]
+        self.dimension = collection_config["dimension"]
 
         logger.info(f"Connecting to Milvus Lite at {milvus_config['uri']}")
 
@@ -50,8 +52,8 @@ class VectorStorage:
             # Connect to Milvus Lite (local file-based storage)
             connections.connect(
                 alias="default",
-                uri=milvus_config['uri'],
-                token=milvus_config.get('token', '')
+                uri=milvus_config["uri"],
+                token=milvus_config.get("token", ""),
             )
             logger.info("Milvus Lite connection established")
 
@@ -65,7 +67,9 @@ class VectorStorage:
     def _ensure_collection(self):
         """Create collection if it doesn't exist, otherwise load it."""
         if utility.has_collection(self.collection_name):
-            logger.info(f"Collection '{self.collection_name}' already exists, loading...")
+            logger.info(
+                f"Collection '{self.collection_name}' already exists, loading..."
+            )
             self.collection = Collection(self.collection_name)
             self.collection.load()
         else:
@@ -79,31 +83,29 @@ class VectorStorage:
             FieldSchema(name="id", dtype=DataType.INT64, is_primary=True, auto_id=True),
             FieldSchema(name="entity_name", dtype=DataType.VARCHAR, max_length=512),
             FieldSchema(name="entity_type", dtype=DataType.VARCHAR, max_length=50),
-            FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=self.dimension)
+            FieldSchema(
+                name="embedding", dtype=DataType.FLOAT_VECTOR, dim=self.dimension
+            ),
         ]
 
         schema = CollectionSchema(
             fields=fields,
-            description=self.collection_config.get('description', 'Graph RAG entity embeddings')
+            description=self.collection_config.get(
+                "description", "Graph RAG entity embeddings"
+            ),
         )
 
         # Create collection
-        self.collection = Collection(
-            name=self.collection_name,
-            schema=schema
-        )
+        self.collection = Collection(name=self.collection_name, schema=schema)
 
         # Create index on vector field
         index_params = {
-            "index_type": self.collection_config.get('index_type', 'IVF_FLAT'),
-            "metric_type": self.collection_config.get('metric_type', 'COSINE'),
-            "params": {"nlist": self.collection_config.get('nlist', 128)}
+            "index_type": self.collection_config.get("index_type", "IVF_FLAT"),
+            "metric_type": self.collection_config.get("metric_type", "COSINE"),
+            "params": {"nlist": self.collection_config.get("nlist", 128)},
         }
 
-        self.collection.create_index(
-            field_name="embedding",
-            index_params=index_params
-        )
+        self.collection.create_index(field_name="embedding", index_params=index_params)
 
         # Load collection into memory
         self.collection.load()
@@ -114,10 +116,7 @@ class VectorStorage:
         )
 
     def add_entity_vector(
-        self,
-        name: str,
-        embedding: List[float],
-        entity_type: str
+        self, name: str, embedding: List[float], entity_type: str
     ) -> bool:
         """
         Store entity embedding in Milvus.
@@ -131,11 +130,13 @@ class VectorStorage:
             True if successful, False otherwise
         """
         if not name or not embedding or not entity_type:
-            logger.warning("Empty name, embedding, or type provided to add_entity_vector")
+            logger.warning(
+                "Empty name, embedding, or type provided to add_entity_vector"
+            )
             return False
 
         # Convert embedding to list if numpy array
-        if hasattr(embedding, 'tolist'):
+        if hasattr(embedding, "tolist"):
             embedding = embedding.tolist()
 
         # Verify dimension
@@ -149,15 +150,17 @@ class VectorStorage:
         try:
             # Insert entity vector
             data = [
-                [name],           # entity_name
-                [entity_type],    # entity_type
-                [embedding]       # embedding
+                [name],  # entity_name
+                [entity_type],  # entity_type
+                [embedding],  # embedding
             ]
 
             self.collection.insert(data)
             self.collection.flush()
 
-            logger.debug(f"Entity vector stored: {name} (type={entity_type}, dim={len(embedding)})")
+            logger.debug(
+                f"Entity vector stored: {name} (type={entity_type}, dim={len(embedding)})"
+            )
             return True
 
         except Exception as e:
@@ -168,7 +171,7 @@ class VectorStorage:
         self,
         query_vector: List[float],
         top_k: int = 5,
-        output_fields: Optional[List[str]] = None
+        output_fields: Optional[List[str]] = None,
     ) -> List[Dict[str, any]]:
         """
         Vector similarity search for entities.
@@ -186,7 +189,7 @@ class VectorStorage:
             return []
 
         # Convert to list if numpy array
-        if hasattr(query_vector, 'tolist'):
+        if hasattr(query_vector, "tolist"):
             query_vector = query_vector.tolist()
 
         # Verify dimension
@@ -203,8 +206,8 @@ class VectorStorage:
         try:
             # Search parameters
             search_params = {
-                "metric_type": self.collection_config.get('metric_type', 'COSINE'),
-                "params": {"nprobe": 10}
+                "metric_type": self.collection_config.get("metric_type", "COSINE"),
+                "params": {"nprobe": 10},
             }
 
             # Perform search
@@ -213,20 +216,24 @@ class VectorStorage:
                 anns_field="embedding",
                 param=search_params,
                 limit=top_k,
-                output_fields=output_fields
+                output_fields=output_fields,
             )
 
             # Format results
             formatted_results = []
             for hits in results:
                 for hit in hits:
-                    formatted_results.append({
-                        "name": hit.entity.get("entity_name"),
-                        "type": hit.entity.get("entity_type"),
-                        "distance": float(hit.distance)
-                    })
+                    formatted_results.append(
+                        {
+                            "name": hit.entity.get("entity_name"),
+                            "type": hit.entity.get("entity_type"),
+                            "distance": float(hit.distance),
+                        }
+                    )
 
-            logger.info(f"Found {len(formatted_results)} similar entities (top_k={top_k})")
+            logger.info(
+                f"Found {len(formatted_results)} similar entities (top_k={top_k})"
+            )
             return formatted_results
 
         except Exception as e:

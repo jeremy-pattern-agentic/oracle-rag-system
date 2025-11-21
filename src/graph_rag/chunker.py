@@ -35,7 +35,7 @@ def chunk_text(text: str, max_length: int = 512) -> List[str]:
 
     # Split on sentence boundaries: periods, exclamation marks, question marks
     # followed by whitespace
-    sentences = re.split(r'(?<=[.!?])\s+', text.strip())
+    sentences = re.split(r"(?<=[.!?])\s+", text.strip())
 
     chunks: List[str] = []
     current_chunk: List[str] = []
@@ -60,5 +60,7 @@ def chunk_text(text: str, max_length: int = 512) -> List[str]:
     if current_chunk:
         chunks.append(" ".join(current_chunk))
 
-    logger.info(f"Chunked text into {len(chunks)} chunks (max_length={max_length} words)")
+    logger.info(
+        f"Chunked text into {len(chunks)} chunks (max_length={max_length} words)"
+    )
     return chunks

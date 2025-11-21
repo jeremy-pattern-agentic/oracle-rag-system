@@ -3,7 +3,7 @@ Graph Storage Module
 Neo4j operations for entity and relationship storage
 """
 
-from typing import List, Dict, Optional
+from typing import List, Dict
 import logging
 from neo4j import GraphDatabase
 from neo4j.exceptions import ServiceUnavailable, AuthError
@@ -30,10 +30,10 @@ class GraphStorage:
                 - database: Neo4j database name
         """
         self.config = config
-        self.uri = config['uri']
-        self.user = config['user']
-        self.password = config['password']
-        self.database = config['database']
+        self.uri = config["uri"]
+        self.user = config["user"]
+        self.password = config["password"]
+        self.database = config["database"]
 
         logger.info(f"Connecting to Neo4j at {self.uri}, database={self.database}")
 
@@ -41,9 +41,11 @@ class GraphStorage:
             self.driver = GraphDatabase.driver(
                 self.uri,
                 auth=(self.user, self.password),
-                max_connection_lifetime=config.get('max_connection_lifetime', 3600),
-                max_connection_pool_size=config.get('max_connection_pool_size', 50),
-                connection_acquisition_timeout=config.get('connection_acquisition_timeout', 120)
+                max_connection_lifetime=config.get("max_connection_lifetime", 3600),
+                max_connection_pool_size=config.get("max_connection_pool_size", 50),
+                connection_acquisition_timeout=config.get(
+                    "connection_acquisition_timeout", 120
+                ),
             )
 
             # Verify connectivity
@@ -65,7 +67,7 @@ class GraphStorage:
         name: str,
         entity_type: str,
         embedding: List[float],
-        label: str = "RagEntity"
+        label: str = "RagEntity",
     ) -> bool:
         """
         Create or update entity node in Neo4j.
@@ -86,7 +88,7 @@ class GraphStorage:
             return False
 
         # Convert embedding to list if numpy array
-        if hasattr(embedding, 'tolist'):
+        if hasattr(embedding, "tolist"):
             embedding = embedding.tolist()
 
         query = f"""
@@ -100,10 +102,7 @@ class GraphStorage:
         try:
             with self.driver.session(database=self.database) as session:
                 result = session.run(
-                    query,
-                    name=name,
-                    type=entity_type,
-                    embedding=embedding
+                    query, name=name, type=entity_type, embedding=embedding
                 )
                 record = result.single()
 
@@ -124,7 +123,7 @@ class GraphStorage:
         relation: str,
         ent2: str,
         entity_label: str = "RagEntity",
-        rel_type: str = "RAG_RELATION"
+        rel_type: str = "RAG_RELATION",
     ) -> bool:
         """
         Create relationship edge between two entities.
@@ -154,12 +153,7 @@ class GraphStorage:
 
         try:
             with self.driver.session(database=self.database) as session:
-                result = session.run(
-                    query,
-                    ent1=ent1,
-                    ent2=ent2,
-                    relation=relation
-                )
+                result = session.run(query, ent1=ent1, ent2=ent2, relation=relation)
                 record = result.single()
 
                 if record:
@@ -218,7 +212,7 @@ class GraphStorage:
             with self.driver.session(database=self.database) as session:
                 result = session.run(query)
                 record = result.single()
-                return record['count'] if record else 0
+                return record["count"] if record else 0
 
         except Exception as e:
             logger.error(f"Error getting entity count: {e}")
@@ -240,7 +234,7 @@ class GraphStorage:
             with self.driver.session(database=self.database) as session:
                 result = session.run(query)
                 record = result.single()
-                return record['count'] if record else 0
+                return record["count"] if record else 0
 
         except Exception as e:
             logger.error(f"Error getting relationship count: {e}")

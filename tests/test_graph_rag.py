@@ -19,12 +19,7 @@ from graph_rag.pipeline import GraphRAGPipeline
 
 # Import config
 sys.path.insert(0, str(Path(__file__).parent.parent / "config"))
-from config import (
-    NEO4J_CONFIG,
-    MILVUS_CONFIG,
-    MILVUS_COLLECTIONS,
-    GRAPH_RAG_CONFIG
-)
+from config import NEO4J_CONFIG, MILVUS_CONFIG, MILVUS_COLLECTIONS, GRAPH_RAG_CONFIG
 
 
 class TestChunker:
@@ -64,8 +59,8 @@ class TestEntityExtractor:
     def extractor(self):
         """Create entity extractor instance."""
         return EntityExtractor(
-            model_name=GRAPH_RAG_CONFIG['ner_model'],
-            confidence_threshold=GRAPH_RAG_CONFIG['ner_confidence_threshold']
+            model_name=GRAPH_RAG_CONFIG["ner_model"],
+            confidence_threshold=GRAPH_RAG_CONFIG["ner_confidence_threshold"],
         )
 
     def test_entity_extraction(self, extractor):
@@ -73,15 +68,17 @@ class TestEntityExtractor:
         sample_text = "Elon Musk is the CEO of Tesla. Tesla is based in California."
         entities = extractor.extract_entities(sample_text)
 
-        print(f"\n✓ Entity extraction test:")
+        print("\n✓ Entity extraction test:")
         print(f"  Text: {sample_text}")
         print(f"  Entities found: {len(entities)}")
         for ent in entities:
-            print(f"    - {ent['name']} ({ent['type']}, confidence={ent['confidence']:.3f})")
+            print(
+                f"    - {ent['name']} ({ent['type']}, confidence={ent['confidence']:.3f})"
+            )
 
         assert len(entities) >= 2  # At least Elon Musk and Tesla
-        assert all(e['confidence'] >= 0.7 for e in entities)
-        assert all('name' in e and 'type' in e for e in entities)
+        assert all(e["confidence"] >= 0.7 for e in entities)
+        assert all("name" in e and "type" in e for e in entities)
 
     def test_entity_confidence_threshold(self, extractor):
         """Test confidence threshold filtering."""
@@ -89,9 +86,11 @@ class TestEntityExtractor:
         entities = extractor.extract_entities(text)
 
         for ent in entities:
-            assert ent['confidence'] >= GRAPH_RAG_CONFIG['ner_confidence_threshold']
+            assert ent["confidence"] >= GRAPH_RAG_CONFIG["ner_confidence_threshold"]
 
-        print(f"✓ Confidence threshold test passed: all entities > {GRAPH_RAG_CONFIG['ner_confidence_threshold']}")
+        print(
+            f"✓ Confidence threshold test passed: all entities > {GRAPH_RAG_CONFIG['ner_confidence_threshold']}"
+        )
 
     def test_empty_text_handling(self, extractor):
         """Test handling of empty text."""
@@ -107,34 +106,37 @@ class TestRelationClassifier:
     def classifier(self):
         """Create relation classifier instance."""
         return RelationClassifier(
-            model_name=GRAPH_RAG_CONFIG['relation_model'],
-            candidate_relations=GRAPH_RAG_CONFIG['candidate_relations'],
-            confidence_threshold=GRAPH_RAG_CONFIG['relation_confidence_threshold']
+            model_name=GRAPH_RAG_CONFIG["relation_model"],
+            candidate_relations=GRAPH_RAG_CONFIG["candidate_relations"],
+            confidence_threshold=GRAPH_RAG_CONFIG["relation_confidence_threshold"],
         )
 
     def test_relation_classification(self, classifier):
         """Test zero-shot relation classifier."""
         result = classifier.classify_relation(
-            "Elon Musk",
-            "Tesla",
-            "Elon Musk is the CEO of Tesla"
+            "Elon Musk", "Tesla", "Elon Musk is the CEO of Tesla"
         )
 
-        print(f"\n✓ Relation classification test:")
+        print("\n✓ Relation classification test:")
         if result:
-            print(f"  Entities: Elon Musk -> Tesla")
-            print(f"  Relation: {result['relation']} (confidence={result['confidence']:.3f})")
-            assert result['relation'] in GRAPH_RAG_CONFIG['candidate_relations']
-            assert result['confidence'] >= GRAPH_RAG_CONFIG['relation_confidence_threshold']
+            print("  Entities: Elon Musk -> Tesla")
+            print(
+                f"  Relation: {result['relation']} (confidence={result['confidence']:.3f})"
+            )
+            assert result["relation"] in GRAPH_RAG_CONFIG["candidate_relations"]
+            assert (
+                result["confidence"]
+                >= GRAPH_RAG_CONFIG["relation_confidence_threshold"]
+            )
         else:
-            print(f"  No confident relation found (threshold={GRAPH_RAG_CONFIG['relation_confidence_threshold']})")
+            print(
+                f"  No confident relation found (threshold={GRAPH_RAG_CONFIG['relation_confidence_threshold']})"
+            )
 
     def test_no_relation(self, classifier):
         """Test classification when no clear relation exists."""
         result = classifier.classify_relation(
-            "Apple",
-            "Microsoft",
-            "Apple and Microsoft are technology companies"
+            "Apple", "Microsoft", "Apple and Microsoft are technology companies"
         )
 
         print(f"✓ No relation test passed: result={result}")
@@ -142,14 +144,14 @@ class TestRelationClassifier:
     def test_location_relation(self, classifier):
         """Test LOCATED_IN relation."""
         result = classifier.classify_relation(
-            "Tesla",
-            "California",
-            "Tesla is based in California"
+            "Tesla", "California", "Tesla is based in California"
         )
 
-        print(f"\n✓ Location relation test:")
+        print("\n✓ Location relation test:")
         if result:
-            print(f"  Relation: {result['relation']} (confidence={result['confidence']:.3f})")
+            print(
+                f"  Relation: {result['relation']} (confidence={result['confidence']:.3f})"
+            )
 
 
 class TestGraphStorage:
@@ -170,48 +172,59 @@ class TestGraphStorage:
 
     def test_entity_storage(self, storage):
         """Test entity storage in Neo4j."""
-        test_embedding = [0.1] * GRAPH_RAG_CONFIG['embedding_dimension']
+        test_embedding = [0.1] * GRAPH_RAG_CONFIG["embedding_dimension"]
 
         success = storage.add_entity(
             name="TestEntity_GraphRAG",
             entity_type="TEST",
             embedding=test_embedding,
-            label=GRAPH_RAG_CONFIG['entity_label']
+            label=GRAPH_RAG_CONFIG["entity_label"],
         )
 
         assert success
-        assert storage.entity_exists("TestEntity_GraphRAG", label=GRAPH_RAG_CONFIG['entity_label'])
+        assert storage.entity_exists(
+            "TestEntity_GraphRAG", label=GRAPH_RAG_CONFIG["entity_label"]
+        )
 
         print("\n✓ Entity storage test passed")
-        print(f"  Entity: TestEntity_GraphRAG (type=TEST)")
+        print("  Entity: TestEntity_GraphRAG (type=TEST)")
 
     def test_relationship_storage(self, storage):
         """Test relationship storage in Neo4j."""
         # Create two test entities first
-        test_embedding = [0.1] * GRAPH_RAG_CONFIG['embedding_dimension']
+        test_embedding = [0.1] * GRAPH_RAG_CONFIG["embedding_dimension"]
 
-        storage.add_entity("TestEnt1_GraphRAG", "PERSON", test_embedding, GRAPH_RAG_CONFIG['entity_label'])
-        storage.add_entity("TestEnt2_GraphRAG", "ORG", test_embedding, GRAPH_RAG_CONFIG['entity_label'])
+        storage.add_entity(
+            "TestEnt1_GraphRAG",
+            "PERSON",
+            test_embedding,
+            GRAPH_RAG_CONFIG["entity_label"],
+        )
+        storage.add_entity(
+            "TestEnt2_GraphRAG", "ORG", test_embedding, GRAPH_RAG_CONFIG["entity_label"]
+        )
 
         # Create relationship
         success = storage.add_relationship(
             "TestEnt1_GraphRAG",
             "WORKS_FOR",
             "TestEnt2_GraphRAG",
-            entity_label=GRAPH_RAG_CONFIG['entity_label'],
-            rel_type=GRAPH_RAG_CONFIG['relationship_type']
+            entity_label=GRAPH_RAG_CONFIG["entity_label"],
+            rel_type=GRAPH_RAG_CONFIG["relationship_type"],
         )
 
         assert success
         print("\n✓ Relationship storage test passed")
-        print(f"  Relationship: TestEnt1_GraphRAG -WORKS_FOR-> TestEnt2_GraphRAG")
+        print("  Relationship: TestEnt1_GraphRAG -WORKS_FOR-> TestEnt2_GraphRAG")
 
     def test_get_counts(self, storage):
         """Test entity/relationship count queries."""
-        entity_count = storage.get_entity_count(label=GRAPH_RAG_CONFIG['entity_label'])
-        rel_count = storage.get_relationship_count(rel_type=GRAPH_RAG_CONFIG['relationship_type'])
+        entity_count = storage.get_entity_count(label=GRAPH_RAG_CONFIG["entity_label"])
+        rel_count = storage.get_relationship_count(
+            rel_type=GRAPH_RAG_CONFIG["relationship_type"]
+        )
 
-        print(f"\n✓ Count queries test passed")
+        print("\n✓ Count queries test passed")
         print(f"  Entities: {entity_count}")
         print(f"  Relationships: {rel_count}")
 
@@ -225,10 +238,7 @@ class TestVectorStorage:
     @pytest.fixture
     def storage(self):
         """Create vector storage instance."""
-        storage = VectorStorage(
-            MILVUS_CONFIG,
-            MILVUS_COLLECTIONS['graph_entities']
-        )
+        storage = VectorStorage(MILVUS_CONFIG, MILVUS_COLLECTIONS["graph_entities"])
         yield storage
         storage.close()
 
@@ -240,12 +250,10 @@ class TestVectorStorage:
 
     def test_vector_storage(self, storage):
         """Test vector storage in Milvus."""
-        test_embedding = [0.1] * GRAPH_RAG_CONFIG['embedding_dimension']
+        test_embedding = [0.1] * GRAPH_RAG_CONFIG["embedding_dimension"]
 
         success = storage.add_entity_vector(
-            name="TestEntity_Milvus",
-            embedding=test_embedding,
-            entity_type="TEST"
+            name="TestEntity_Milvus", embedding=test_embedding, entity_type="TEST"
         )
 
         assert success
@@ -255,16 +263,16 @@ class TestVectorStorage:
     def test_vector_search(self, storage):
         """Test vector similarity search."""
         # Add a test vector first
-        test_embedding = [0.2] * GRAPH_RAG_CONFIG['embedding_dimension']
+        test_embedding = [0.2] * GRAPH_RAG_CONFIG["embedding_dimension"]
         storage.add_entity_vector("SearchTest_Entity", test_embedding, "TEST")
 
         # Search for similar vectors
         results = storage.search_similar_entities(test_embedding, top_k=5)
 
-        print(f"\n✓ Vector search test passed")
+        print("\n✓ Vector search test passed")
         print(f"  Results found: {len(results)}")
         for i, result in enumerate(results[:3]):
-            print(f"    {i+1}. {result['name']} (distance={result['distance']:.4f})")
+            print(f"    {i + 1}. {result['name']} (distance={result['distance']:.4f})")
 
         assert isinstance(results, list)
 
@@ -272,7 +280,7 @@ class TestVectorStorage:
         """Test entity count in Milvus."""
         count = storage.get_entity_count()
 
-        print(f"\n✓ Milvus count query test passed")
+        print("\n✓ Milvus count query test passed")
         print(f"  Entities in Milvus: {count}")
 
         assert count >= 0
@@ -287,8 +295,8 @@ class TestGraphRAGPipeline:
         pipeline = GraphRAGPipeline(
             neo4j_config=NEO4J_CONFIG,
             milvus_config=MILVUS_CONFIG,
-            collection_config=MILVUS_COLLECTIONS['graph_entities'],
-            graph_rag_config=GRAPH_RAG_CONFIG
+            collection_config=MILVUS_COLLECTIONS["graph_entities"],
+            graph_rag_config=GRAPH_RAG_CONFIG,
         )
         yield pipeline
         pipeline.close()
@@ -324,11 +332,11 @@ class TestGraphRAGPipeline:
         print(f"Processing time: {stats['processing_time_seconds']}s")
         print("=" * 60)
 
-        assert stats['chunks_created'] >= 1
-        assert stats['entities_extracted'] >= 3  # Elon Musk, Tesla, California, SpaceX
-        assert stats['entities_stored_neo4j'] >= 3
-        assert stats['entities_stored_milvus'] >= 3
-        assert stats['processing_time_seconds'] > 0
+        assert stats["chunks_created"] >= 1
+        assert stats["entities_extracted"] >= 3  # Elon Musk, Tesla, California, SpaceX
+        assert stats["entities_stored_neo4j"] >= 3
+        assert stats["entities_stored_milvus"] >= 3
+        assert stats["processing_time_seconds"] > 0
 
     def test_get_statistics(self, pipeline):
         """Test statistics retrieval."""
@@ -339,9 +347,9 @@ class TestGraphRAGPipeline:
         print(f"  Neo4j relationships: {stats['neo4j_relationships']}")
         print(f"  Milvus entities: {stats['milvus_entities']}")
 
-        assert 'neo4j_entities' in stats
-        assert 'neo4j_relationships' in stats
-        assert 'milvus_entities' in stats
+        assert "neo4j_entities" in stats
+        assert "neo4j_relationships" in stats
+        assert "milvus_entities" in stats
 
 
 if __name__ == "__main__":
