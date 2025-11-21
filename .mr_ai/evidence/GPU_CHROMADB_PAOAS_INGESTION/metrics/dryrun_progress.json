@@ -1,0 +1,34 @@
+{
+  "start_time": "2025-11-16T22:19:12.323141",
+  "total_documents": 50,
+  "documents_processed": 50,
+  "documents_failed": 0,
+  "entities_extracted": 84,
+  "entities_stored_neo4j": 84,
+  "entities_stored_milvus": 84,
+  "relations_found": 8,
+  "relations_stored": 8,
+  "total_processing_time": 25.698030948638916,
+  "batches_completed": 5,
+  "gpu_metrics": [
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 45,
+      "gpu_utilization_pct": 32,
+      "memory_utilization_pct": 12,
+      "memory_used_mb": 3124,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:19:38.211722"
+    }
+  ],
+  "errors": [],
+  "last_processed_index": 50,
+  "end_time": "2025-11-16T22:19:38.211754",
+  "total_time": 25.888040781021118,
+  "final_storage_counts": {
+    "neo4j_entities": 51,
+    "neo4j_relationships": 10,
+    "milvus_entities": 166
+  }
+}

@@ -1,0 +1,464 @@
+{
+  "start_time": "2025-11-16T22:21:38.458404",
+  "total_documents": 8870,
+  "documents_processed": 8870,
+  "documents_failed": 0,
+  "entities_extracted": 20560,
+  "entities_stored_neo4j": 20560,
+  "entities_stored_milvus": 20560,
+  "relations_found": 191,
+  "relations_stored": 191,
+  "total_processing_time": 4892.280441761017,
+  "batches_completed": 887,
+  "gpu_metrics": [
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 48,
+      "gpu_utilization_pct": 32,
+      "memory_utilization_pct": 12,
+      "memory_used_mb": 3124,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:23:01.632668"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 50,
+      "gpu_utilization_pct": 27,
+      "memory_utilization_pct": 11,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:24:28.987765"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 53,
+      "gpu_utilization_pct": 33,
+      "memory_utilization_pct": 7,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:25:42.502582"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 51,
+      "gpu_utilization_pct": 32,
+      "memory_utilization_pct": 12,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:27:19.628482"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 50,
+      "gpu_utilization_pct": 20,
+      "memory_utilization_pct": 5,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:29:30.734562"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 51,
+      "gpu_utilization_pct": 33,
+      "memory_utilization_pct": 12,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:32:08.594679"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 50,
+      "gpu_utilization_pct": 20,
+      "memory_utilization_pct": 5,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:33:32.537960"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 51,
+      "gpu_utilization_pct": 28,
+      "memory_utilization_pct": 12,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:35:17.803823"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 49,
+      "gpu_utilization_pct": 26,
+      "memory_utilization_pct": 11,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:38:01.839501"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 52,
+      "gpu_utilization_pct": 2,
+      "memory_utilization_pct": 1,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:40:12.212636"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 51,
+      "gpu_utilization_pct": 27,
+      "memory_utilization_pct": 11,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:42:20.361754"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 51,
+      "gpu_utilization_pct": 28,
+      "memory_utilization_pct": 12,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:44:46.476063"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 51,
+      "gpu_utilization_pct": 26,
+      "memory_utilization_pct": 11,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:45:44.956988"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 51,
+      "gpu_utilization_pct": 32,
+      "memory_utilization_pct": 12,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:47:48.138761"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 51,
+      "gpu_utilization_pct": 2,
+      "memory_utilization_pct": 1,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:50:27.783461"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 51,
+      "gpu_utilization_pct": 24,
+      "memory_utilization_pct": 10,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:51:35.015866"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 53,
+      "gpu_utilization_pct": 26,
+      "memory_utilization_pct": 11,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:52:25.940896"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 57,
+      "gpu_utilization_pct": 28,
+      "memory_utilization_pct": 11,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:53:36.826148"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 55,
+      "gpu_utilization_pct": 46,
+      "memory_utilization_pct": 9,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:55:21.107806"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 53,
+      "gpu_utilization_pct": 34,
+      "memory_utilization_pct": 12,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:57:30.389406"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 53,
+      "gpu_utilization_pct": 35,
+      "memory_utilization_pct": 8,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T22:58:43.864622"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 52,
+      "gpu_utilization_pct": 38,
+      "memory_utilization_pct": 10,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:00:35.320651"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 58,
+      "gpu_utilization_pct": 27,
+      "memory_utilization_pct": 7,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:02:12.670875"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 53,
+      "gpu_utilization_pct": 33,
+      "memory_utilization_pct": 12,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:03:25.684454"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 54,
+      "gpu_utilization_pct": 25,
+      "memory_utilization_pct": 6,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:04:37.250101"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 52,
+      "gpu_utilization_pct": 32,
+      "memory_utilization_pct": 12,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:05:32.462627"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 54,
+      "gpu_utilization_pct": 38,
+      "memory_utilization_pct": 10,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:07:25.632934"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 56,
+      "gpu_utilization_pct": 33,
+      "memory_utilization_pct": 12,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:09:46.028162"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 52,
+      "gpu_utilization_pct": 27,
+      "memory_utilization_pct": 11,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:11:14.391135"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 53,
+      "gpu_utilization_pct": 31,
+      "memory_utilization_pct": 9,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:12:48.678962"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 57,
+      "gpu_utilization_pct": 21,
+      "memory_utilization_pct": 8,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:14:03.712983"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 51,
+      "gpu_utilization_pct": 27,
+      "memory_utilization_pct": 11,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:15:36.310454"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 51,
+      "gpu_utilization_pct": 28,
+      "memory_utilization_pct": 11,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:18:52.014444"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 52,
+      "gpu_utilization_pct": 26,
+      "memory_utilization_pct": 11,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:21:08.614202"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 58,
+      "gpu_utilization_pct": 33,
+      "memory_utilization_pct": 8,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:23:26.514749"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 52,
+      "gpu_utilization_pct": 29,
+      "memory_utilization_pct": 12,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:26:30.952752"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 52,
+      "gpu_utilization_pct": 31,
+      "memory_utilization_pct": 12,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:29:40.129613"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 52,
+      "gpu_utilization_pct": 50,
+      "memory_utilization_pct": 11,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:32:02.305963"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 52,
+      "gpu_utilization_pct": 32,
+      "memory_utilization_pct": 12,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:34:12.665897"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 52,
+      "gpu_utilization_pct": 27,
+      "memory_utilization_pct": 11,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:36:42.058667"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 51,
+      "gpu_utilization_pct": 27,
+      "memory_utilization_pct": 11,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:38:15.050613"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 53,
+      "gpu_utilization_pct": 17,
+      "memory_utilization_pct": 5,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:40:10.544009"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 52,
+      "gpu_utilization_pct": 33,
+      "memory_utilization_pct": 12,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:41:25.385383"
+    },
+    {
+      "gpu_index": 0,
+      "gpu_name": "NVIDIA GeForce RTX 5060 Ti",
+      "temperature_c": 51,
+      "gpu_utilization_pct": 26,
+      "memory_utilization_pct": 10,
+      "memory_used_mb": 3144,
+      "memory_total_mb": 16311,
+      "timestamp": "2025-11-16T23:42:56.462894"
+    }
+  ],
+  "errors": [],
+  "last_processed_index": 8870,
+  "end_time": "2025-11-16T23:43:40.885826",
+  "total_time": 4922.427141189575,
+  "final_storage_counts": {
+    "neo4j_entities": 1336,
+    "neo4j_relationships": 67,
+    "milvus_entities": 20726
+  }
+}
